@@ -116,7 +116,12 @@ sourceSlurm <- function(
     warning("When using Slurm via sourceSlurm, collection is not possible.", call. = FALSE)
 
   # Submitting the job
-  sbatch(script_path, submit = plan$submit, wait = plan$wait, ...)
+  args <- c(
+    list(...), x = script_path, submit = plan$submit, wait = plan$wait
+    )
+  if (!("output" %in% names(args)))
+    args$output <- paste0(job_name, ".out")
+  do.call(sbatch, args)
 
 }
 
@@ -158,7 +163,9 @@ sourceSlurm <- function(
 #' @rdname sourceSlurm
 slurmr_cmd <- function(cmd_path, cmd_name = "slurmr", add_alias = TRUE, bashrc_path = "~/.bashrc") {
 
-  fn   <- suppressWarnings(normalizePath(sprintf("%s/%s", cmd_path, cmd_name), ))
+  # Expanding path
+  cmd_path <- normalizePath(cmd_path)
+  fn   <- suppressWarnings(sprintf("%s/%s", cmd_path, cmd_name))
   bash <- new_bash(fn)
   bash$Rscript("", flags = list(vanilla = TRUE, e = "slurmR::sourceSlurm('$1', plan = 'submit')"))
   bash$write()

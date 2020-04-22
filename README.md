@@ -3,9 +3,11 @@
 [![Travis build
 status](https://travis-ci.org/USCbiostats/slurmR.svg?branch=master)](https://travis-ci.org/USCbiostats/slurmR)
 [![codecov](https://codecov.io/gh/USCbiostats/slurmR/branch/master/graph/badge.svg)](https://codecov.io/gh/USCbiostats/slurmR)
-[![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/slurmR)](https://CRAN.R-project.org/package=slurmR)
+[![CRAN
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/slurmR)](https://cran.r-project.org/package=slurmR)
+[![status](https://tinyverse.netlify.com/badge/slurmR)](https://CRAN.R-project.org/package=slurmR)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -107,7 +109,7 @@ We can use the function `Slurm_lapply` to distribute computations
 ``` r
 ans <- Slurm_lapply(x, mean, plan = "none")
 #  Warning: [submit = FALSE] The job hasn't been submitted yet. Use sbatch() to submit the job, or you can submit it via command line using the following:
-#  sbatch --job-name=slurmr-job-2a4da5f9d4e /home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/01-bash.sh
+#  sbatch --job-name=slurmr-job-299a16893fb7 /home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/01-bash.sh
 Slurm_clean(ans) # Cleaning after you
 ```
 
@@ -119,10 +121,11 @@ get more info, we can actually set the verbose mode on
 opts_slurmR$verbose_on()
 ans <- Slurm_lapply(x, mean, plan = "none")
 #  --------------------------------------------------------------------------------
-#  [VERBOSE MODE ON] The R script that will be used is located at: /home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/00-rscript.r and has the following contents:
+#  [VERBOSE MODE ON] The R script that will be used is located at: /home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/00-rscript.r and has the following contents:
 #  --------------------------------------------------------------------------------
 #  .libPaths(c("/home/george/R/x86_64-pc-linux-gnu-library/3.6", "/usr/local/lib/R/site-library", "/usr/lib/R/site-library", "/usr/lib/R/library"))
-#  Slurm_env <- function (x) 
+#  message("[slurmR info] Loading variables and functions... ", appendLF = FALSE)
+#  Slurm_env <- function (x = "SLURM_ARRAY_TASK_ID") 
 #  {
 #      y <- Sys.getenv(x)
 #      if ((x == "SLURM_ARRAY_TASK_ID") && y == "") {
@@ -130,36 +133,85 @@ ans <- Slurm_lapply(x, mean, plan = "none")
 #      }
 #      y
 #  }
-#  ARRAY_ID         <- as.integer(Slurm_env("SLURM_ARRAY_TASK_ID"))
-#  INDICES          <- readRDS("/home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/INDICES.rds")
-#  X                <- readRDS(sprintf("/home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/X_%04d.rds", ARRAY_ID))
-#  FUN              <- readRDS("/home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/FUN.rds")
-#  mc.cores         <- readRDS("/home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/mc.cores.rds")
-#  seeds            <- readRDS("/home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/seeds.rds")
+#  ARRAY_ID  <- as.integer(Slurm_env("SLURM_ARRAY_TASK_ID"))
+#  
+#  # The -snames- function creates the write names for I/O of files as a 
+#  # function of the ARRAY_ID
+#  snames    <- function (type, array_id = NULL, tmp_path = NULL, job_name = NULL) 
+#  {
+#      if (length(array_id) && length(array_id) > 1) 
+#          return(sapply(array_id, snames, type = type, tmp_path = tmp_path, 
+#              job_name = job_name))
+#      type <- switch(type, r = "00-rscript.r", sh = "01-bash.sh", 
+#          out = "02-output-%A-%a.out", rds = if (missing(array_id)) "03-answer-%03i.rds" else sprintf("03-answer-%03i.rds", 
+#              array_id), job = "job.rds", stop("Invalid type, the only valid types are `r`, `sh`, `out`, and `rds`.", 
+#              call. = FALSE))
+#      sprintf("%s/%s/%s", tmp_path, job_name, type)
+#  }
+#  TMP_PATH  <- "/home/george/Documents/development/slurmR"
+#  JOB_NAME  <- "slurmr-job-299a16893fb7"
+#  
+#  # The -tcq- function is a wrapper of tryCatch that on error tries to recover
+#  # the message and saves the outcome so that slurmR can return OK.
+#  tcq <- function (...) 
+#  {
+#      ans <- tryCatch(..., error = function(e) e)
+#      if (inherits(ans, "error")) {
+#          ARRAY_ID. <- get("ARRAY_ID", envir = .GlobalEnv)
+#          msg <- paste("An error has ocurred while evualting the expression:\n", 
+#              paste(deparse(match.call()[[2]]), collapse = "\n"), 
+#              "\n in ", "ARRAY_ID # ", ARRAY_ID.)
+#          warning(msg, immediate. = TRUE, call. = FALSE)
+#          ans$message <- paste(ans$message, msg)
+#          saveRDS(ans, snames("rds", tmp_path = get("TMP_PATH", 
+#              envir = .GlobalEnv), job_name = get("JOB_NAME", envir = .GlobalEnv), 
+#              array_id = ARRAY_ID.))
+#          q("no")
+#      }
+#      invisible(ans)
+#  }
+#  message("done loading variables and functions.")
+#  tcq({
+#    INDICES <- readRDS("/home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/INDICES.rds")
+#  })
+#  tcq({
+#    X <- readRDS(sprintf("/home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/X_%04d.rds", ARRAY_ID))
+#  })
+#  tcq({
+#    FUN <- readRDS("/home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/FUN.rds")
+#  })
+#  tcq({
+#    mc.cores <- readRDS("/home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/mc.cores.rds")
+#  })
+#  tcq({
+#    seeds <- readRDS("/home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/seeds.rds")
+#  })
 #  set.seed(seeds[ARRAY_ID], kind = NULL, normal.kind = NULL)
-#  ans <- parallel::mclapply(
+#  tcq({
+#    ans <- parallel::mclapply(
 #      X                = X,
 #      FUN              = FUN,
 #      mc.cores         = mc.cores
 #  )
-#  saveRDS(ans, sprintf("/home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/03-answer-%03i.rds", ARRAY_ID), compress = TRUE)
+#  })
+#  saveRDS(ans, sprintf("/home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/03-answer-%03i.rds", ARRAY_ID), compress = TRUE)
 #  --------------------------------------------------------------------------------
-#  The bash file that will be used is located at: /home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/01-bash.sh and has the following contents:
+#  The bash file that will be used is located at: /home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/01-bash.sh and has the following contents:
 #  --------------------------------------------------------------------------------
 #  #!/bin/sh
-#  #SBATCH --job-name=slurmr-job-2a4da5f9d4e
-#  #SBATCH --output=/home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/02-output-%A-%a.out
+#  #SBATCH --job-name=slurmr-job-299a16893fb7
+#  #SBATCH --output=/home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/02-output-%A-%a.out
 #  #SBATCH --array=1-2
-#  #SBATCH --job-name=slurmr-job-2a4da5f9d4e
-#  #SBATCH --cpus_per_task=1
+#  #SBATCH --job-name=slurmr-job-299a16893fb7
+#  #SBATCH --cpus-per-task=1
 #  #SBATCH --ntasks=1
 #  export OMP_NUM_THREADS=1
-#  /usr/lib/R/bin/Rscript  /home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/00-rscript.r
+#  /usr/lib/R/bin/Rscript  /home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/00-rscript.r
 #  --------------------------------------------------------------------------------
 #  EOF
 #  --------------------------------------------------------------------------------
 #  Warning: [submit = FALSE] The job hasn't been submitted yet. Use sbatch() to submit the job, or you can submit it via command line using the following:
-#  sbatch --job-name=slurmr-job-2a4da5f9d4e /home/george/Documents/development/slurmR/slurmr-job-2a4da5f9d4e/01-bash.sh
+#  sbatch --job-name=slurmr-job-299a16893fb7 /home/george/Documents/development/slurmR/slurmr-job-299a16893fb7/01-bash.sh
 Slurm_clean(ans) # Cleaning after you
 ```
 
@@ -293,488 +345,24 @@ There are several ways to enhance R for HPC. Depending on what are your
 goals/restrictions/preferences, you can use any of the following from
 this **manually curated** list:
 
-<table cellspacing="0" border="0">
-
-<colgroup width="125">
-
-</colgroup>
-
-<colgroup width="85">
-
-</colgroup>
-
-<colgroup width="73">
-
-</colgroup>
-
-<colgroup span="4" width="85">
-
-</colgroup>
-
-<colgroup width="125">
-
-</colgroup>
-
-<colgroup width="104">
-
-</colgroup>
-
-<tbody>
-
-<tr>
-
-<td height="36" align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>Package</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>Rerun (1)</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>apply family (2)</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>Multinode cluster (3)</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>Slurm options</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>Focus on \[blank\]</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>System \[blank\]</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>Dependencies (4)</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-<b>Status</b>
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="border-top: 1px solid #000000" height="36" align="left" valign="middle" bgcolor="#FFFFFF">
-
-<b>drake</b>
-
-</td>
-
-<td style="border-top: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-yes
-
-</td>
-
-<td style="border-top: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td style="border-top: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td style="border-top: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-by template
-
-</td>
-
-<td style="border-top: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-workflows
-
-</td>
-
-<td style="border-top: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-agnostic
-
-</td>
-
-<td style="border-top: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF" sdnum="1033;0;@">
-
-5/9
-
-</td>
-
-<td style="border-top: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-active
-
-</td>
-
-</tr>
-
-<tr>
-
-<td height="36" align="left" valign="middle" bgcolor="#CCCCCC">
-
-<b>slurmR</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#CCCCCC">
-
-yes
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#CCCCCC">
-
-yes
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#CCCCCC">
-
-yes
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#CCCCCC">
-
-on the fly
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#CCCCCC">
-
-calls
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#CCCCCC">
-
-specific
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#CCCCCC" sdnum="1033;0;@">
-
-0/0
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#CCCCCC">
-
-active
-
-</td>
-
-</tr>
-
-<tr>
-
-<td height="36" align="left" valign="middle" bgcolor="#FFFFFF">
-
-<b>rslurm</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-on the fly
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-calls
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-specific
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF" sdnum="1033;0;@">
-
-1/1
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-active
-
-</td>
-
-</tr>
-
-<tr>
-
-<td height="36" align="left" valign="middle" bgcolor="#FFFFFF">
-
-<b>future.batchtools</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-yes
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-yes
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-by template
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-calls
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-agnostic
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF" sdnum="1033;0;@">
-
-2/24
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-active
-
-</td>
-
-</tr>
-
-<tr>
-
-<td height="36" align="left" valign="middle" bgcolor="#FFFFFF">
-
-<b>batchtools</b>
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-yes
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-yes
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-by template
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-calls
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-agnostic
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF" sdnum="1033;0;@">
-
-12/20
-
-</td>
-
-<td align="center" valign="middle" bgcolor="#FFFFFF">
-
-active
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="border-bottom: 1px solid #000000" height="36" align="left" valign="middle" bgcolor="#FFFFFF">
-
-<b>clustermq</b>
-
-</td>
-
-<td style="border-bottom: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td style="border-bottom: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td style="border-bottom: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-\-
-
-</td>
-
-<td style="border-bottom: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-by template
-
-</td>
-
-<td style="border-bottom: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-calls
-
-</td>
-
-<td style="border-bottom: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-agnostic
-
-</td>
-
-<td style="border-bottom: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF" sdnum="1033;0;@">
-
-6/16
-
-</td>
-
-<td style="border-bottom: 1px solid #000000" align="center" valign="middle" bgcolor="#FFFFFF">
-
-active
-
-</td>
-
-</tr>
-
-<tr>
-
-<td colspan="9" height="17" align="left" valign="middle" bgcolor="#FFFFFF">
-
-\[1\] After errors, the part or the entire job can be resubmitted.
-
-</td>
-
-</tr>
-
-<tr>
-
-<td colspan="9" height="17" align="left" valign="middle" bgcolor="#FFFFFF">
-
-\[2\] Functionality similar to the apply family in base R, e.g. lapply,
-sapply, mapply or similar.
-
-</td>
-
-</tr>
-
-<tr>
-
-<td colspan="9" height="17" align="left" valign="middle" bgcolor="#FFFFFF">
-
-\[3\] Creating a cluster object using either MPI or Socket connection.
-
-</td>
-
-</tr>
-
-<tr>
-
-<td colspan="9" height="17" align="left" bgcolor="#FFFFFF">
-
-\[4\] Number of directed/recursive dependencies. As reported in
-<a href="https://tinyverse.netlify.com/">https://tinyverse.netlify.com/</a>
-(June 4, 2019)
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-Please submit an issue or a PR if you find anything off.
+| Package                                                                       | Rerun (1) | \*apply (2) | makeCluster (3) | Slurm options | Dependencies                                                                                                             | Activity                                                                                                                                         |
+| :---------------------------------------------------------------------------- | :-------- | :---------- | :-------------- | :------------ | :----------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| [**slurmR**](https://cran.r-project.org/package=slurmR)                       | yes       | yes         | yes             | on the fly    | [![status](https://tinyverse.netlify.com/badge/slurmR)](https://CRAN.R-project.org/package=slurmR)                       | [![Activity](https://img.shields.io/github/last-commit/USCbiostats/slurmR)](https://github.com/USCbiostats/slurmR)                               |
+| [**drake**](https://cran.r-project.org/package=drake)                         | yes       | \-          | \-              | by template   | [![status](https://tinyverse.netlify.com/badge/drake)](https://CRAN.R-project.org/package=drake)                         | [![Activity](https://img.shields.io/github/last-commit/ropensci/drake)](https://github.com/ropensci/drake)                                       |
+| [**rslurm**](https://cran.r-project.org/package=rslurm)                       | \-        | yes         | \-              | on the fly    | [![status](https://tinyverse.netlify.com/badge/rslurm)](https://CRAN.R-project.org/package=rslurm)                       | [![Activity](https://img.shields.io/github/last-commit/SESYNC-ci/rslurm)](https://github.com/SESYNC-ci/rslurm)                                   |
+| [**future.batchtools**](https://cran.r-project.org/package=future.batchtools) | \-        | yes         | yes             | by template   | [![status](https://tinyverse.netlify.com/badge/future.batchtools)](https://CRAN.R-project.org/package=future.batchtools) | [![Activity](https://img.shields.io/github/last-commit/HenrikBengtsson/future.batchtools)](https://github.com/HenrikBengtsson/future.batchtools) |
+| [**batchtools**](https://cran.r-project.org/package=batchtools)               | yes       | yes         | \-              | by template   | [![status](https://tinyverse.netlify.com/badge/batchtools)](https://CRAN.R-project.org/package=batchtools)               | [![Activity](https://img.shields.io/github/last-commit/mllg/batchtools)](https://github.com/mllg/batchtools)                                     |
+| [**clustermq**](https://cran.r-project.org/package=clustermq)                 | \-        | \-          | \-              | by template   | [![status](https://tinyverse.netlify.com/badge/clustermq)](https://CRAN.R-project.org/package=clustermq)                 | [![Activity](https://img.shields.io/github/last-commit/mschubert/clustermq)](https://github.com/mschubert/clustermq)                             |
+
+1)  After errors, the part or the entire job can be resubmitted.
+2)  Functionality similar to the apply family in base R, e.g. lapply,
+    sapply, mapply or similar.
+3)  Creating a cluster object using either MPI or Socket connection.
+
+The packages [**slurmR**](https://cran.r-project.org/package=slurmR),
+[**rslurm**](https://cran.r-project.org/package=rslurm) work only on
+Slurm. The [**drake**](https://cran.r-project.org/package=drake) package
+is focused on workflows.
 
 ## Contributing
 
@@ -809,7 +397,7 @@ Here is a manually curated list of institutions using Slurm:
 | Indiana University                                     | US      | [link](https://kb.iu.edu/d/awrz)                                                                             |
 | Caltech HPC Center                                     | US      | [link](https://www.hpc.caltech.edu/documentation/slurm-commands)                                             |
 | Institute for Advanced Study                           | US      | [link](https://www.sns.ias.edu/computing/slurm)                                                              |
-| UTSouthwestern Medical Center BioHPC                   | US      | [link](https://portal.biohpc.swmed.edu/content/guides/slurm/)                                                |
+| UTSouthwestern Medical Center BioHPC                   | US      | [link](https://portal-dmz.biohpc.swmed.edu/content/guides/slurm/)                                            |
 | Vanderbilt University ACCRE                            | US      | [link](https://www.vanderbilt.edu/accre/documentation/slurm/)                                                |
 | University of Virginia Research Computing              | US      | [link](https://www.rc.virginia.edu/userinfo/rivanna/slurm/)                                                  |
 | Center for Advanced Computing                          | CA      | [link](https://cac.queensu.ca/wiki/index.php/SLURM)                                                          |

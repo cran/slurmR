@@ -46,7 +46,7 @@ Slurm_log <- function(x, which. = NULL, cmd = NULL) {
   if (status(x) == -1)
     stop("It seems that the job hasn't started yet.", call. = FALSE)
 
-  location <- paste0(x$opts_r$tmp_path, "/", x$opts_job$`job-name`)
+  location <- paste0(get_tmp_path(x), "/", get_job_name(x))
   if (!dir.exists(location))
     stop(
       "While the job seems to have started, the path to its temp files ",
@@ -75,7 +75,7 @@ Slurm_log <- function(x, which. = NULL, cmd = NULL) {
     if (which. > x$njobs || which. < 1L)
       stop("`which.` should be within 1 and x$njobs.", call. = FALSE)
 
-    logs <- paste0(location, "/02-output-", x$jobid, "-", which., ".out")
+    logs <- paste0(location, "/02-output-", get_job_id(x), "-", which., ".out")
     if (!file.exists(logs))
       stop("The requested logfile does not exists.", call. = FALSE)
 
@@ -96,7 +96,7 @@ Slurm_log <- function(x, which. = NULL, cmd = NULL) {
 
   msg <- paste0(
     "You are about to call \"", cmd, "\"  to checkout the log file of\n",
-    "your Slurm job #", x$jobid, ". You can also checkout the log file in\n",
+    "your Slurm job #", get_job_id(x), ". You can also checkout the log file in\n",
     "the following location:\n  ", logs,"\nContinue? Yes(y) / No(n). "
   )
 

@@ -8,11 +8,11 @@
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <meta name="author" content="George G Vega Yon" />
 
-<meta name="date" content="2019-12-19" />
+<meta name="date" content="2020-04-22" />
 
 <title>Working with Slurm</title>
 
@@ -119,9 +119,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -290,7 +287,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -305,13 +303,16 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">Working with Slurm</h1>
 <h4 class="author">George G Vega Yon</h4>
-<h4 class="date">2019-12-19</h4>
+<h4 class="date">2020-04-22</h4>
 
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>Nowadays, high-performance-computing (HPC) clusters are commonly available tools for either in or out of cloud settings. <a href="https://slurm.schedmd.com/">Slurm Work Manager</a> (formerly <em>Simple Linux Utility for Resource Manager</em>) is a program written in C that is used to efficiently manage resources in HPC clusters. The slurmR R package provides tools for using R in HPC settings that work with Slurm. It provides wrappers and auxiliary functions that allow the user to seamlessly integrate their analysis pipeline with HPC, putting emphasis on providing the user with a family of functions similar to those that the parallel R package provides.</p>
+<p>Nowadays, high-performance-computing (HPC) clusters are commonly available tools for either in or out of cloud settings. <a href="https://slurm.schedmd.com/">Slurm Work Manager</a> (formerly <em>Simple Linux Utility for Resource Manager</em>) is a program written in C that is used to efficiently manage resources in HPC clusters. The slurmR R package provides tools for using R in HPC settings that work with Slurm. It provides wrappers and functions that allow the user to seamlessly integrate their analysis pipeline with HPC clusters, putting emphasis on providing the user with a family of functions similar to those that the parallel R package provides.</p>
+</div>
+<div id="definitions" class="section level1">
+<h1>Definitions</h1>
 <p>First, some important discussion points within the context of Slurm+R that users in general will find useful. Most of the points have to do with options available for Slurm, and in particular, with the <code>sbatch</code> command with is used to submit batch jobs to Slurm. Users who have used Slurm in the past may wish to skip this and continue reading the following section.</p>
 <ul>
 <li><p><strong>Node</strong> A single computer in the HPC: A lot of times jobs will be submitted to a single node. The simplest way of using R+Slurm is submitting a single job and requesting multiple CPUs to use, for example, <code>parallel::parLapply</code> or <code>parallel::mclapply</code>. Usually users do not need to request an specific number of nodes to be used as Slurm will allocate the resources as needed.</p>
