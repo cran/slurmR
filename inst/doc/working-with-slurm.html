@@ -12,13 +12,45 @@
 
 <meta name="author" content="George G Vega Yon" />
 
-<meta name="date" content="2020-04-22" />
+<meta name="date" content="2021-09-02" />
 
 <title>Working with Slurm</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 code.sourceCode > span { display: inline-block; line-height: 1.25; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -106,6 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -303,7 +336,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Working with Slurm</h1>
 <h4 class="author">George G Vega Yon</h4>
-<h4 class="date">2020-04-22</h4>
+<h4 class="date">2021-09-02</h4>
 
 
 
@@ -330,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>Within R, and hence the Rscript submitted to Slurm, users can access this environment variable with <code>Sys.getenv(&quot;SLURM_ARRAY_TASK_ID&quot;)</code>. Some of the functionalities of <code>slurmR</code> rely on Job Arrays.</p>
 <p>More information on Job Arrays can be found <a href="https://slurm.schedmd.com/job_array.html">here</a>. The relevant option for this in <code>sbatch</code> is <code>--array</code>.</p></li>
 </ul>
-<p>More information about Slurm can be found their official website <a href="https://slurm.schedmd.com/">here</a>. A tutorial about how to use Slurm with R can be found <a href="https://uscbiostats.github.io/slurmr-workshop">here</a>.</p>
+<p>More information about Slurm can be found their official website <a href="https://slurm.schedmd.com/">here</a>. A tutorial about how to use Slurm with R can be found <a href="https://uscbiostats.github.io/slurmr-workshop/">here</a>.</p>
 </div>
 <div id="submitting-jobs-via-sbatch" class="section level1">
 <h1>Submitting jobs via sbatch</h1>

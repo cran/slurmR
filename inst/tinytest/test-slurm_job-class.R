@@ -14,7 +14,17 @@ if (slurm_available()) {
   ans  <- Slurm_collect(job1)
 
   # Checking the basics
-  expect_equal(ans, list(2, 2))
+  expect_equal(unname(ans), list(2, 2))
+
+  job1 <- mget(sort(ls(envir = job1)), envir = job1)
+  job2 <- mget(sort(ls(envir = job2)), envir = job2)
+  job3 <- mget(sort(ls(envir = job3)), envir = job3)
+
+  # Removing hooks
+  job1 <- job1[names(job1) != "hooks"]
+  job2 <- job2[names(job2) != "hooks"] 
+  job3 <- job3[names(job3) != "hooks"]
+
   expect_equal(job1, job2)
   expect_equal(job1, job3)
 
@@ -32,8 +42,8 @@ if (slurm_available()) {
 
   # Cleanup
 
-  Slurm_clean(job1)
-  Slurm_clean(job2)
+  # Slurm_clean(job1)
+  # Slurm_clean(job2)
 
 
 

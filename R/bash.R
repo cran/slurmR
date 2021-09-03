@@ -13,14 +13,10 @@ slurm_available <- function() {
   if (.Platform$OS.type != "unix")
     return(FALSE)
 
-  x <- tryCatch(
-    system2("sbatch", "--version", stderr = TRUE, stdout = TRUE),
-    error = function(e) e)
+  # It is available if R can find it!
+  x <- Sys.which("sbatch")
+  return(nchar(x) > 0L)
 
-  if (inherits(x, "error"))
-    FALSE
-  else
-    TRUE
 }
 
 #' @export
@@ -41,7 +37,7 @@ squeue.default <- function(x = NULL, ...) {
   option <- c(sprintf("-j%i", x), "-o%all", parse_flags(...))
 
   # message("Submitting job...")
-  ans <- silent_system2("squeue", option, stdout = TRUE, stderr = TRUE, wait = TRUE)
+  ans <- silent_system2("squeue", option, stdout = TRUE, stderr = TRUE)
 
   # Parsing the data
   ans <- lapply(ans, strsplit, split="|", fixed=TRUE)
@@ -78,6 +74,7 @@ scancel.default <- function(x = NULL, ...) {
   option <- c(parse_flags(...), x)
 
   ans <- silent_system2("scancel", option, stdout = TRUE, stderr = TRUE)
+  wait_slurm(x)
 
   invisible()
 
@@ -118,7 +115,7 @@ sacct.default <- function(
       )
     )
 
-  ans <- silent_system2("sacct", flags, stdout = TRUE)
+  ans <- silent_system2("sacct", flags, stdout = TRUE, stderr = TRUE)
 
   ans <- lapply(ans, strsplit, split="|", fixed=TRUE)
   ans <- do.call(rbind, lapply(ans, unlist))

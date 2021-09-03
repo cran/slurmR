@@ -15,9 +15,41 @@
 
 <title>Getting Started with slurmR</title>
 
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 code.sourceCode > span { display: inline-block; line-height: 1.25; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -105,6 +137,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -411,6 +444,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ##   account     : lc_dvc
 ##   job-name    : simulating-pi
 ## 
+## Preamble:
+##   n/a
+## 
 ## Other options (R workflow):
 ##   tmp_path    : /stagging/slurmr-jobs/
 ##   cmd         : sbatch
@@ -426,11 +462,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## get_job_name : function (check = TRUE)  
 ## get_opts_job : function (...)  
 ## get_opts_r : function (...)  
+## get_preamble : function ()  
 ## get_tmp_path : function ()  
 ## get_verbose : function ()  
+## reset : function ()  
 ## set_job_name : function (name)  
 ## set_opts : function (...)  
-## set_tmp_path : function (path)  
+## set_preamble : function (...)  
+## set_tmp_path : function (path = Sys.getenv(&quot;SLURMR_TMP_PATH&quot;, getwd()))  
 ## verbose_off : function ()  
 ## verbose_on : function ()</code></pre>
 <p>Once we have specified all the needed options, we can do our <code>Slurm_lapply</code> call and submit the job to the queue as follows:</p>
