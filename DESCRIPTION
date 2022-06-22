@@ -1,6 +1,6 @@
 Package: slurmR
 Title: A Lightweight Wrapper for 'Slurm'
-Version: 0.5-1
+Version: 0.5-2
 Authors@R: c( person("George", "Vega Yon", email = "g.vegayon@gmail.com", role = c("aut",
           "cre"), comment = c(ORCID = "0000-0002-3171-0844")), person("Paul", "Marjoram",
           email = "pmarjora@usc.edu", role = c("ctb", "ths"), comment = c(ORCID =
@@ -21,13 +21,13 @@ License: MIT + file LICENSE
 BugReports: https://github.com/USCbiostats/slurmR/issues
 URL: https://github.com/USCbiostats/slurmR, https://slurm.schedmd.com/
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 Suggests: knitr, rmarkdown, covr, tinytest
 Imports: utils
 VignetteBuilder: knitr
 Language: en-US
 NeedsCompilation: no
-Packaged: 2021-09-03 00:16:16 UTC; george
+Packaged: 2022-06-21 20:52:11 UTC; george
 Author: George Vega Yon [aut, cre] (<https://orcid.org/0000-0002-3171-0844>),
   Paul Marjoram [ctb, ths] (<https://orcid.org/0000-0003-0824-7449>),
   National Cancer Institute (NCI) [fnd] (Grant Number 5P01CA196569-02),
@@ -37,4 +37,4 @@ Author: George Vega Yon [aut, cre] (<https://orcid.org/0000-0002-3171-0844>),
     <https://orcid.org/0000-0001-9754-0393>)
 Maintainer: George Vega Yon <g.vegayon@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-09-03 04:20:02 UTC
+Date/Publication: 2022-06-22 22:50:02 UTC

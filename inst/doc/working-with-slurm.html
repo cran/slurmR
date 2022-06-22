@@ -12,26 +12,10 @@
 
 <meta name="author" content="George G Vega Yon" />
 
-<meta name="date" content="2021-09-02" />
+<meta name="date" content="2022-06-21" />
 
 <title>Working with Slurm</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
-  }
-});
-</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -43,6 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -52,9 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -64,16 +49,14 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -82,9 +65,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -336,7 +319,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Working with Slurm</h1>
 <h4 class="author">George G Vega Yon</h4>
-<h4 class="date">2021-09-02</h4>
+<h4 class="date">2022-06-21</h4>
 
 
 
@@ -368,18 +351,18 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="submitting-jobs-via-sbatch" class="section level1">
 <h1>Submitting jobs via sbatch</h1>
 <p>In general, users will submit jobs to Slurm using the <code>sbatch</code> command line function. The <code>sbatch</code> function’s main argument is the name (path) to a bash script that holds the instructions (and sometimes options) associated to the program. Here is an example of an bash file to be submitted to Slurm</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="co">#SBATCH --time=01:00:00</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co">#SBATCH --job-name=&quot;A long job&quot;</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co">#SBATCH --mem=5GB</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co">#SBATCH --output=long-job.out</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="bu">cd</span> /path/where/to/start/the/job</span>
-<span id="cb1-7"><a href="#cb1-7"></a></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="co"># This may vary per HPC system. At USC&#39;s hpc system</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co"># we use: source /usr/usc/R/default/setup.sh</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="ex">module</span> load R</span>
-<span id="cb1-11"><a href="#cb1-11"></a></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="ex">Rscript</span> --vanilla long-job-rscript.R</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="co">#!/bin/bash</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="co">#SBATCH --time=01:00:00</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="co">#SBATCH --job-name=&quot;A long job&quot;</span></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="co">#SBATCH --mem=5GB</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="co">#SBATCH --output=long-job.out</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="bu">cd</span> /path/where/to/start/the/job</a>
+<a class="sourceLine" id="cb1-7" title="7"></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="co"># This may vary per HPC system. At USC&#39;s hpc system</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="co"># we use: source /usr/usc/R/default/setup.sh</span></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="ex">module</span> load R</a>
+<a class="sourceLine" id="cb1-11" title="11"></a>
+<a class="sourceLine" id="cb1-12" title="12"><span class="ex">Rscript</span> --vanilla long-job-rscript.R</a></code></pre></div>
 <p>This example bash file, which we name “long-job-rscript.slurm”, has the following components:</p>
 <ul>
 <li><p><code>#!/bin/bash</code> The interpreter directive that is common to bash scripts.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p></li>
@@ -389,13 +372,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><p>Finally, <code>Rscript</code> executes the R script named <code>long-job-rscript.R</code>.</p></li>
 </ul>
 <p>This batch script can be submitted to Slurm using the <code>sbatch</code> command line tool:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a>$ <span class="ex">sbatch</span> long-job-rscript.slurm</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="ex">sbatch</span> long-job-rscript.slurm</a></code></pre></div>
 <p>This is what happens under-the-hood in <code>slurmR</code> overall.</p>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>For more on this see <a href="https://askubuntu.com/questions/141928/what-is-the-difference-between-bin-sh-and-bin-bash">this thread on StackExchange</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>For more on this see <a href="https://askubuntu.com/questions/141928/what-is-the-difference-between-bin-sh-and-bin-bash">this thread on StackExchange</a>.<a href="#fnref1" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
 

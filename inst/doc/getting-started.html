@@ -15,22 +15,6 @@
 
 <title>Getting Started with slurmR</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
-  }
-});
-</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -42,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -51,9 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode { white-space: pre; position: relative; }
 div.sourceCode { margin: 1em 0; }
@@ -63,16 +48,14 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
 }
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
+    border: none; pointer-events: all; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -81,9 +64,9 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  {  }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+a.sourceLine::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -365,16 +348,16 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><p>With the full list of nodenames in usage, <code>makeSlurmCluster</code> will pass the list of names to <code>parallel::makePSOCKcluster</code>, which ultimately creates the <code>cluster</code> class object.</p></li>
 </ol>
 <p>After creating the cluster object, the workflow is exactly the same as with the <code>parallel</code> package. Here is an example from the <code>makeSlurmCluster</code> manual</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># Creating a cluster with 100 workers/offpring/child R sessions</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a>cl &lt;-<span class="st"> </span><span class="kw">makeSlurmCluster</span>(<span class="dv">100</span>)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Computing the mean of a 100 random uniforms within each worker</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co"># for this we can use any of the function available in the parallel package.</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a>ans &lt;-<span class="st"> </span><span class="kw">parSapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">200</span>, <span class="cf">function</span>(x) <span class="kw">mean</span>(<span class="kw">runif</span>(<span class="dv">100</span>)))</span>
-<span id="cb1-7"><a href="#cb1-7"></a></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="co"># We simply call stopCluster as we would do with any other cluster</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co"># object</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">stopCluster</span>(ans)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># Creating a cluster with 100 workers/offpring/child R sessions</span></a>
+<a class="sourceLine" id="cb1-2" title="2">cl &lt;-<span class="st"> </span><span class="kw">makeSlurmCluster</span>(<span class="dv">100</span>)</a>
+<a class="sourceLine" id="cb1-3" title="3"></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="co"># Computing the mean of a 100 random uniforms within each worker</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="co"># for this we can use any of the function available in the parallel package.</span></a>
+<a class="sourceLine" id="cb1-6" title="6">ans &lt;-<span class="st"> </span><span class="kw">parSapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">200</span>, <span class="cf">function</span>(x) <span class="kw">mean</span>(<span class="kw">runif</span>(<span class="dv">100</span>)))</a>
+<a class="sourceLine" id="cb1-7" title="7"></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="co"># We simply call stopCluster as we would do with any other cluster</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="co"># object</span></a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="kw">stopCluster</span>(ans)</a></code></pre></div>
 </div>
 <div id="job-arrays-using-the-apply-family" class="section level2">
 <h2>Job arrays using the *apply family</h2>
@@ -403,10 +386,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="example-simulating-pi" class="section level1">
 <h1>Example simulating Pi</h1>
 <p>We would like to implement a simulation algorithm to be run in a cluster. In this case, we have the very simple function we would like to parallelize:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>simpi &lt;-<span class="st"> </span><span class="cf">function</span>(n) {</span>
-<span id="cb2-2"><a href="#cb2-2"></a>  points &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">runif</span>(n<span class="op">*</span><span class="dv">2</span>), <span class="dt">ncol=</span><span class="dv">2</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  <span class="kw">mean</span>(<span class="kw">rowSums</span>(points<span class="op">^</span><span class="dv">2</span>) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">1</span>)<span class="op">*</span><span class="dv">4</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">simpi &lt;-<span class="st"> </span><span class="cf">function</span>(n) {</a>
+<a class="sourceLine" id="cb2-2" title="2">  points &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">runif</span>(n<span class="op">*</span><span class="dv">2</span>), <span class="dt">ncol=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb2-3" title="3">  <span class="kw">mean</span>(<span class="kw">rowSums</span>(points<span class="op">^</span><span class="dv">2</span>) <span class="op">&lt;=</span><span class="st"> </span><span class="dv">1</span>)<span class="op">*</span><span class="dv">4</span></a>
+<a class="sourceLine" id="cb2-4" title="4">}</a></code></pre></div>
 <p>This simple function generates an estimate of Pi. This approximation is based on the following observation</p>
 <p><span class="math display">\[
 \mbox{Area} = \pi\times r^2 \implies \frac{Area}{r^2} = \pi
@@ -415,9 +398,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="single-node-machine-multi-core-simulation" class="section level2">
 <h2>Single node (machine), multi-core simulation</h2>
 <p>Using <code>parallel::mclapply</code>, we could just type</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">set.seed</span>(<span class="dv">12</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a>ans &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(<span class="kw">rep</span>(<span class="fl">1e6</span>, <span class="dv">100</span>), simpi)</span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">mean</span>(<span class="kw">unlist</span>(ans))</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">set.seed</span>(<span class="dv">12</span>)</a>
+<a class="sourceLine" id="cb3-2" title="2">ans &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">mclapply</span>(<span class="kw">rep</span>(<span class="fl">1e6</span>, <span class="dv">100</span>), simpi)</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="kw">mean</span>(<span class="kw">unlist</span>(ans))</a></code></pre></div>
 <p>Which estimates pi using a single node(computer).</p>
 </div>
 <div id="multi-job-submission-with-job-arrays" class="section level2">
@@ -428,14 +411,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><p><code>job_name</code>: The name of the job, passed to <code>sbatch</code> via the <code>job-name</code> flag. This will also be used as the name of the folder that is created within <code>tmp_path</code>.</p></li>
 </ul>
 <p>Ultimately, all the objects saved by the job will be located in the path defined by <code>tmp_path</code>/<code>job_name</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">library</span>(slurmR)</span>
-<span id="cb4-2"><a href="#cb4-2"></a></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="co"># Setting required parameters</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a>opts_slurmR<span class="op">$</span><span class="kw">set_tmp_path</span>(<span class="st">&quot;/stagging/slurmr-jobs/&quot;</span>)</span>
-<span id="cb4-5"><a href="#cb4-5"></a>opts_slurmR<span class="op">$</span><span class="kw">set_job_name</span>(<span class="st">&quot;simulating-pi&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">library</span>(slurmR)</a>
+<a class="sourceLine" id="cb4-2" title="2"></a>
+<a class="sourceLine" id="cb4-3" title="3"><span class="co"># Setting required parameters</span></a>
+<a class="sourceLine" id="cb4-4" title="4">opts_slurmR<span class="op">$</span><span class="kw">set_tmp_path</span>(<span class="st">&quot;/stagging/slurmr-jobs/&quot;</span>)</a>
+<a class="sourceLine" id="cb4-5" title="5">opts_slurmR<span class="op">$</span><span class="kw">set_job_name</span>(<span class="st">&quot;simulating-pi&quot;</span>)</a></code></pre></div>
 <p>Moreover, we can specify more options to be set as default options for all the jobs submitted for the current session. For example, we can set the default partition and account as follows:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Optional parameters are set via set_opts</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>opts_slurmR<span class="op">$</span><span class="kw">set_opts</span>(<span class="dt">partition=</span><span class="st">&quot;conti&quot;</span>, <span class="dt">account=</span><span class="st">&quot;lc_dvc&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="co"># Optional parameters are set via set_opts</span></a>
+<a class="sourceLine" id="cb5-2" title="2">opts_slurmR<span class="op">$</span><span class="kw">set_opts</span>(<span class="dt">partition=</span><span class="st">&quot;conti&quot;</span>, <span class="dt">account=</span><span class="st">&quot;lc_dvc&quot;</span>)</a></code></pre></div>
 <p>A comprehensive list of options can be found <a href="https://slurm.schedmd.com/sbatch.html">here</a>. To see what are all the current defaults, we can just print the <code>opts_slurmR</code> object:</p>
 <pre><code>opts_slurmR</code></pre>
 <pre><code>## 
@@ -473,32 +456,32 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 ## verbose_off : function ()  
 ## verbose_on : function ()</code></pre>
 <p>Once we have specified all the needed options, we can do our <code>Slurm_lapply</code> call and submit the job to the queue as follows:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>job &lt;-<span class="st"> </span><span class="kw">Slurm_lapply</span>(<span class="kw">rep</span>(<span class="fl">1e6</span>, <span class="dv">100</span>), simpi, <span class="dt">njobs=</span><span class="dv">10</span>, <span class="dt">mc.cores=</span><span class="dv">10</span>, <span class="dt">plan =</span> <span class="st">&quot;wait&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">job &lt;-<span class="st"> </span><span class="kw">Slurm_lapply</span>(<span class="kw">rep</span>(<span class="fl">1e6</span>, <span class="dv">100</span>), simpi, <span class="dt">njobs=</span><span class="dv">10</span>, <span class="dt">mc.cores=</span><span class="dv">10</span>, <span class="dt">plan =</span> <span class="st">&quot;wait&quot;</span>)</a></code></pre></div>
 <p>If <code>plan = &quot;wait&quot;</code>, then <code>Slurm_lapply</code> will return once the job is done (or failed). To collect the results we can use the <code>Slurm_collect</code> function:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>ans &lt;-<span class="st"> </span><span class="kw">Slurm_collect</span>(job)</span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">mean</span>(<span class="kw">unlist</span>(ans))</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1">ans &lt;-<span class="st"> </span><span class="kw">Slurm_collect</span>(job)</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="kw">mean</span>(<span class="kw">unlist</span>(ans))</a></code></pre></div>
 <p>Alternatively, we could have collected the results on the fly by telling <code>slurmR</code> that the plan is to <code>&quot;collect&quot;</code> the results:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>ans &lt;-<span class="st"> </span><span class="kw">Slurm_lapply</span>(<span class="kw">rep</span>(<span class="fl">1e6</span>, <span class="dv">100</span>), simpi, <span class="dt">njobs=</span><span class="dv">10</span>, <span class="dt">mc.cores=</span><span class="dv">10</span>, <span class="dt">plan =</span> <span class="st">&quot;collect&quot;</span>)</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">mean</span>(<span class="kw">unlist</span>(job))</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">ans &lt;-<span class="st"> </span><span class="kw">Slurm_lapply</span>(<span class="kw">rep</span>(<span class="fl">1e6</span>, <span class="dv">100</span>), simpi, <span class="dt">njobs=</span><span class="dv">10</span>, <span class="dt">mc.cores=</span><span class="dv">10</span>, <span class="dt">plan =</span> <span class="st">&quot;collect&quot;</span>)</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="kw">mean</span>(<span class="kw">unlist</span>(job))</a></code></pre></div>
 <p>This way <code>Slurm_lapply</code> will do the <code>Slurm_collect</code> call before returning.</p>
 </div>
 <div id="multi-node-cluster-object" class="section level2">
 <h2>Multi-node cluster object</h2>
 <p>Another way to do this is using <code>parallel::parLapply</code> with a multi-node socket cluster.<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> To do this, we can use the <code>makeSlurmCluster</code> function and proceed as follows:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>cl &lt;-<span class="st"> </span><span class="kw">makeSlurmCluster</span>(<span class="dv">50</span>)</span>
-<span id="cb11-2"><a href="#cb11-2"></a>ans &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">parLapply</span>(cl, <span class="kw">rep</span>(<span class="fl">1e6</span>, <span class="dv">100</span>), simpi)</span>
-<span id="cb11-3"><a href="#cb11-3"></a><span class="kw">mean</span>(<span class="kw">unlist</span>(ans))</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">cl &lt;-<span class="st"> </span><span class="kw">makeSlurmCluster</span>(<span class="dv">50</span>)</a>
+<a class="sourceLine" id="cb11-2" title="2">ans &lt;-<span class="st"> </span>parallel<span class="op">::</span><span class="kw">parLapply</span>(cl, <span class="kw">rep</span>(<span class="fl">1e6</span>, <span class="dv">100</span>), simpi)</a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="kw">mean</span>(<span class="kw">unlist</span>(ans))</a></code></pre></div>
 <p>Once we are done with the calculations, we can stop the cluster object by simply calling the <code>stopCluster</code> function:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">stopCluster</span>(cl)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">stopCluster</span>(cl)</a></code></pre></div>
 <p>And <code>slurmR</code> will kill the job (and thus, the socket connections) calling <code>scancel</code>.</p>
 </div>
 </div>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p>Data transfering on Socket clusters is done using serialization with the <code>serialize</code> and <code>unserialize</code> functions. This way, data is sent directly through the connection. In the case of job arrays, data is sent using <code>saveRDS</code> and <code>readRDS</code> which involves I/O on the disk.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p>The current default configuration of R does not allow having more than 128 connections simulatenously (see <code>?connection</code>). This can be changed during installation time.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p>In general, Slurm will try to allocate multiple tasks in the same node (machine). But if no node with that many resources is available, the tasks will span multiple nodes.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn1"><p>Data transfering on Socket clusters is done using serialization with the <code>serialize</code> and <code>unserialize</code> functions. This way, data is sent directly through the connection. In the case of job arrays, data is sent using <code>saveRDS</code> and <code>readRDS</code> which involves I/O on the disk.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>The current default configuration of R does not allow having more than 128 connections simulatenously (see <code>?connection</code>). This can be changed during installation time.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>In general, Slurm will try to allocate multiple tasks in the same node (machine). But if no node with that many resources is available, the tasks will span multiple nodes.<a href="#fnref3" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
 
