@@ -12,93 +12,107 @@
 
 <meta name="author" content="George G Vega Yon" />
 
-<meta name="date" content="2022-06-21" />
+<meta name="date" content="2023-04-14" />
 
 <title>Working with Slurm</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {  }
+{ }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -107,13 +121,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -319,66 +340,142 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Working with Slurm</h1>
 <h4 class="author">George G Vega Yon</h4>
-<h4 class="date">2022-06-21</h4>
+<h4 class="date">2023-04-14</h4>
 
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>Nowadays, high-performance-computing (HPC) clusters are commonly available tools for either in or out of cloud settings. <a href="https://slurm.schedmd.com/">Slurm Work Manager</a> (formerly <em>Simple Linux Utility for Resource Manager</em>) is a program written in C that is used to efficiently manage resources in HPC clusters. The slurmR R package provides tools for using R in HPC settings that work with Slurm. It provides wrappers and functions that allow the user to seamlessly integrate their analysis pipeline with HPC clusters, putting emphasis on providing the user with a family of functions similar to those that the parallel R package provides.</p>
+<p>Nowadays, high-performance-computing (HPC) clusters are commonly
+available tools for either in or out of cloud settings. <a href="https://slurm.schedmd.com/">Slurm Work Manager</a> (formerly
+<em>Simple Linux Utility for Resource Manager</em>) is a program written
+in C that is used to efficiently manage resources in HPC clusters. The
+slurmR R package provides tools for using R in HPC settings that work
+with Slurm. It provides wrappers and functions that allow the user to
+seamlessly integrate their analysis pipeline with HPC clusters, putting
+emphasis on providing the user with a family of functions similar to
+those that the parallel R package provides.</p>
 </div>
 <div id="definitions" class="section level1">
 <h1>Definitions</h1>
-<p>First, some important discussion points within the context of Slurm+R that users in general will find useful. Most of the points have to do with options available for Slurm, and in particular, with the <code>sbatch</code> command with is used to submit batch jobs to Slurm. Users who have used Slurm in the past may wish to skip this and continue reading the following section.</p>
+<p>First, some important discussion points within the context of Slurm+R
+that users in general will find useful. Most of the points have to do
+with options available for Slurm, and in particular, with the
+<code>sbatch</code> command with is used to submit batch jobs to Slurm.
+Users who have used Slurm in the past may wish to skip this and continue
+reading the following section.</p>
 <ul>
-<li><p><strong>Node</strong> A single computer in the HPC: A lot of times jobs will be submitted to a single node. The simplest way of using R+Slurm is submitting a single job and requesting multiple CPUs to use, for example, <code>parallel::parLapply</code> or <code>parallel::mclapply</code>. Usually users do not need to request an specific number of nodes to be used as Slurm will allocate the resources as needed.</p>
-<p>A common mistake of R users is to specify the number of nodes and expect that their script will be parallelized. This won’t happen unless the user explicitly writes a parallel computing script.</p>
-<p>The relevant flag for <code>sbatch</code> is <code>--nodes</code>.</p></li>
-<li><p><strong>Partition</strong> A group of nodes in HPC. Generally large nodes may have multiple partitions, meaning that nodes may be grouped in various ways. For example, nodes belonging to a single group of users may be in a single partition, nodes dedicated to work with large data may be in another partition. Usually, partitions are associated with account privileges, so users may need to specify which account are they using when telling Slurm what partition they plan to use.</p>
-<p>The relevant flag for <code>sbatch</code> is <code>--partition</code>.</p></li>
-<li><p><strong>Account</strong> Accounts may be associated with partitions. Accounts can have privileges to use a partition or set of nodes. Often, users need to specify the account when submitting jobs to a particular partition.</p>
-<p>The relevant flag for <code>sbatch</code> is <code>--account</code>.</p></li>
-<li><p><strong>Task</strong> A step within a job. A particular job can have multiple tasks. tasks may span multiple nodes, so if the user wants to submit a multicore job, this option may not be the right one.</p>
-<p>The relevant flag for <code>sbatch</code> is <code>--ntasks</code></p></li>
-<li><p><strong>CPU</strong> generally this refers to core or thread (which may be different in systems supporting multithreaded cores). Users may want to specify how many CPUs they want to use for a task. And this is the relevant option when using things like OpenMP or functions that allow creating cluster objects in R (e.g. <code>makePSOCKcluster</code>, <code>makeForkCluster</code>).</p>
-<p>The relevant option in <code>sbatch</code> is <code>--cpus-per-task</code>. More information regarding CPUs in Slurm can be found <a href="https://slurm.schedmd.com/cpu_management.html">here</a>. Information regarding how Slurm counts CPUs/cores/threads can be found <a href="https://slurm.schedmd.com/faq.html#cpu_count">here</a>.</p></li>
-<li><p><strong>Job Array</strong> Slurm supports job arrays. A job array is in simple terms a job that is repeated multiple times by Slurm, this is, replicates a single job as requested per the user. In the case of R, when using this option, a single R script is spanned in multiple jobs, so the user can take advantage of this and parallelize jobs across multiple nodes. Besides from the fact that jobs within a Job Array may be spanned across multiple nodes, each job in that array has a unique ID that is available to the user via environment variables, in particular <code>SLURM_ARRAY_TASK_ID</code>.</p>
-<p>Within R, and hence the Rscript submitted to Slurm, users can access this environment variable with <code>Sys.getenv(&quot;SLURM_ARRAY_TASK_ID&quot;)</code>. Some of the functionalities of <code>slurmR</code> rely on Job Arrays.</p>
-<p>More information on Job Arrays can be found <a href="https://slurm.schedmd.com/job_array.html">here</a>. The relevant option for this in <code>sbatch</code> is <code>--array</code>.</p></li>
+<li><p><strong>Node</strong> A single computer in the HPC: A lot of
+times jobs will be submitted to a single node. The simplest way of using
+R+Slurm is submitting a single job and requesting multiple CPUs to use,
+for example, <code>parallel::parLapply</code> or
+<code>parallel::mclapply</code>. Usually users do not need to request an
+specific number of nodes to be used as Slurm will allocate the resources
+as needed.</p>
+<p>A common mistake of R users is to specify the number of nodes and
+expect that their script will be parallelized. This won’t happen unless
+the user explicitly writes a parallel computing script.</p>
+<p>The relevant flag for <code>sbatch</code> is
+<code>--nodes</code>.</p></li>
+<li><p><strong>Partition</strong> A group of nodes in HPC. Generally
+large nodes may have multiple partitions, meaning that nodes may be
+grouped in various ways. For example, nodes belonging to a single group
+of users may be in a single partition, nodes dedicated to work with
+large data may be in another partition. Usually, partitions are
+associated with account privileges, so users may need to specify which
+account are they using when telling Slurm what partition they plan to
+use.</p>
+<p>The relevant flag for <code>sbatch</code> is
+<code>--partition</code>.</p></li>
+<li><p><strong>Account</strong> Accounts may be associated with
+partitions. Accounts can have privileges to use a partition or set of
+nodes. Often, users need to specify the account when submitting jobs to
+a particular partition.</p>
+<p>The relevant flag for <code>sbatch</code> is
+<code>--account</code>.</p></li>
+<li><p><strong>Task</strong> A step within a job. A particular job can
+have multiple tasks. tasks may span multiple nodes, so if the user wants
+to submit a multicore job, this option may not be the right one.</p>
+<p>The relevant flag for <code>sbatch</code> is
+<code>--ntasks</code></p></li>
+<li><p><strong>CPU</strong> generally this refers to core or thread
+(which may be different in systems supporting multithreaded cores).
+Users may want to specify how many CPUs they want to use for a task. And
+this is the relevant option when using things like OpenMP or functions
+that allow creating cluster objects in R
+(e.g. <code>makePSOCKcluster</code>, <code>makeForkCluster</code>).</p>
+<p>The relevant option in <code>sbatch</code> is
+<code>--cpus-per-task</code>. More information regarding CPUs in Slurm
+can be found <a href="https://slurm.schedmd.com/cpu_management.html">here</a>.
+Information regarding how Slurm counts CPUs/cores/threads can be found
+<a href="https://slurm.schedmd.com/faq.html#cpu_count">here</a>.</p></li>
+<li><p><strong>Job Array</strong> Slurm supports job arrays. A job array
+is in simple terms a job that is repeated multiple times by Slurm, this
+is, replicates a single job as requested per the user. In the case of R,
+when using this option, a single R script is spanned in multiple jobs,
+so the user can take advantage of this and parallelize jobs across
+multiple nodes. Besides from the fact that jobs within a Job Array may
+be spanned across multiple nodes, each job in that array has a unique ID
+that is available to the user via environment variables, in particular
+<code>SLURM_ARRAY_TASK_ID</code>.</p>
+<p>Within R, and hence the Rscript submitted to Slurm, users can access
+this environment variable with
+<code>Sys.getenv(&quot;SLURM_ARRAY_TASK_ID&quot;)</code>. Some of the
+functionalities of <code>slurmR</code> rely on Job Arrays.</p>
+<p>More information on Job Arrays can be found <a href="https://slurm.schedmd.com/job_array.html">here</a>. The relevant
+option for this in <code>sbatch</code> is <code>--array</code>.</p></li>
 </ul>
-<p>More information about Slurm can be found their official website <a href="https://slurm.schedmd.com/">here</a>. A tutorial about how to use Slurm with R can be found <a href="https://uscbiostats.github.io/slurmr-workshop/">here</a>.</p>
+<p>More information about Slurm can be found their official website <a href="https://slurm.schedmd.com/">here</a>. A tutorial about how to use
+Slurm with R can be found <a href="https://uscbiostats.github.io/slurmr-workshop/">here</a>.</p>
 </div>
 <div id="submitting-jobs-via-sbatch" class="section level1">
 <h1>Submitting jobs via sbatch</h1>
-<p>In general, users will submit jobs to Slurm using the <code>sbatch</code> command line function. The <code>sbatch</code> function’s main argument is the name (path) to a bash script that holds the instructions (and sometimes options) associated to the program. Here is an example of an bash file to be submitted to Slurm</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="co">#!/bin/bash</span></a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="co">#SBATCH --time=01:00:00</span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="co">#SBATCH --job-name=&quot;A long job&quot;</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="co">#SBATCH --mem=5GB</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="co">#SBATCH --output=long-job.out</span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="bu">cd</span> /path/where/to/start/the/job</a>
-<a class="sourceLine" id="cb1-7" title="7"></a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="co"># This may vary per HPC system. At USC&#39;s hpc system</span></a>
-<a class="sourceLine" id="cb1-9" title="9"><span class="co"># we use: source /usr/usc/R/default/setup.sh</span></a>
-<a class="sourceLine" id="cb1-10" title="10"><span class="ex">module</span> load R</a>
-<a class="sourceLine" id="cb1-11" title="11"></a>
-<a class="sourceLine" id="cb1-12" title="12"><span class="ex">Rscript</span> --vanilla long-job-rscript.R</a></code></pre></div>
-<p>This example bash file, which we name “long-job-rscript.slurm”, has the following components:</p>
+<p>In general, users will submit jobs to Slurm using the
+<code>sbatch</code> command line function. The <code>sbatch</code>
+function’s main argument is the name (path) to a bash script that holds
+the instructions (and sometimes options) associated to the program. Here
+is an example of an bash file to be submitted to Slurm</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#SBATCH --time=01:00:00</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#SBATCH --job-name=&quot;A long job&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#SBATCH --mem=5GB</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#SBATCH --output=long-job.out</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="bu">cd</span> /path/where/to/start/the/job</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co"># This may vary per HPC system. At USC&#39;s hpc system</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co"># we use: source /usr/usc/R/default/setup.sh</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="ex">module</span> load R</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">--vanilla</span> long-job-rscript.R</span></code></pre></div>
+<p>This example bash file, which we name “long-job-rscript.slurm”, has
+the following components:</p>
 <ul>
-<li><p><code>#!/bin/bash</code> The interpreter directive that is common to bash scripts.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p></li>
-<li><p>The <code>#SBATCH</code> lines specify options for scheduling the job. In order, these options are: Set a maximum time of 1 hour, name the job <code>A long job</code>, allocate 5GB of memory to the job, write all the output (including <code>Rscript</code>’s) to <code>long-job.out</code>.</p></li>
-<li><p>The <code>cd</code> line changes the directory to some other place where the Rscript needs to be executed.</p></li>
-<li><p>The <code>module</code> line loads R. There are various ways to do this, but it is a common requirement for the user to specify that it will be using R.</p></li>
-<li><p>Finally, <code>Rscript</code> executes the R script named <code>long-job-rscript.R</code>.</p></li>
+<li><p><code>#!/bin/bash</code> The interpreter directive that is common
+to bash scripts.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p></li>
+<li><p>The <code>#SBATCH</code> lines specify options for scheduling the
+job. In order, these options are: Set a maximum time of 1 hour, name the
+job <code>A long job</code>, allocate 5GB of memory to the job, write
+all the output (including <code>Rscript</code>’s) to
+<code>long-job.out</code>.</p></li>
+<li><p>The <code>cd</code> line changes the directory to some other
+place where the Rscript needs to be executed.</p></li>
+<li><p>The <code>module</code> line loads R. There are various ways to
+do this, but it is a common requirement for the user to specify that it
+will be using R.</p></li>
+<li><p>Finally, <code>Rscript</code> executes the R script named
+<code>long-job-rscript.R</code>.</p></li>
 </ul>
-<p>This batch script can be submitted to Slurm using the <code>sbatch</code> command line tool:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="ex">sbatch</span> long-job-rscript.slurm</a></code></pre></div>
-<p>This is what happens under-the-hood in <code>slurmR</code> overall.</p>
+<p>This batch script can be submitted to Slurm using the
+<code>sbatch</code> command line tool:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">$</span> sbatch long-job-rscript.slurm</span></code></pre></div>
+<p>This is what happens under-the-hood in <code>slurmR</code>
+overall.</p>
 </div>
-<div class="footnotes">
+<div class="footnotes footnotes-end-of-document">
 <hr />
 <ol>
-<li id="fn1"><p>For more on this see <a href="https://askubuntu.com/questions/141928/what-is-the-difference-between-bin-sh-and-bin-bash">this thread on StackExchange</a>.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p>For more on this see <a href="https://askubuntu.com/questions/141928/what-is-the-difference-between-bin-sh-and-bin-bash">this
+thread on StackExchange</a>.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
